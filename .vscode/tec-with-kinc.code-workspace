@@ -1,0 +1,41 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\HaxeLibraries\\Kinc"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.h": "c",
+			"chrono": "c",
+			"filesystem": "c",
+			"format": "c",
+			"xstring": "c",
+			"array": "c",
+			"vector": "c",
+			"xutility": "c",
+			"bit": "c",
+			"compare": "c",
+			"cstddef": "c",
+			"iterator": "c",
+			"limits": "c",
+			"memory": "c",
+			"sstream": "c",
+			"system_error": "c",
+			"type_traits": "c",
+			"xiosbase": "c",
+			"xlocale": "c",
+			"xtree": "c",
+			"functional": "c",
+			"ratio": "c",
+			"tuple": "c",
+			"utility": "c",
+			"xmemory": "c",
+			"xtr1common": "c",
+			"set": "c"
+		}
+	}
+}

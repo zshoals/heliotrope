@@ -1,0 +1,75 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Kinc: Build for Windows (VS2022)",
+			"type": "shell",
+			"command": "C:/HaxeLibraries/Kinc/make.bat",
+			"args": [
+				"windows",
+				"--compile",
+				"--debug",
+			],
+			"group": "build",
+			// Use the standard MS compiler pattern to detect errors, warnings and infos
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Kinc: Build for Windows (VS2022) NoShaders",
+			"type": "shell",
+			"command": "C:/HaxeLibraries/Kinc/make.bat",
+			"args": [
+				"windows",
+				"--noshaders",
+				"--compile",
+				"--debug",
+
+			],
+			"group": "build",
+			// Use the standard MS compiler pattern to detect errors, warnings and infos
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Kinc (Release): Build for Windows (VS2022) NoShaders",
+			"type": "shell",
+			"command": "C:/HaxeLibraries/Kinc/make.bat",
+			"args": [
+				"windows",
+				"--noshaders",
+				"--compile",
+				// "--debug",
+
+			],
+			"group": "build",
+			// Use the standard MS compiler pattern to detect errors, warnings and infos
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Kinc: Remake Build Files",
+			"type": "shell",
+			"command": "C:/HaxeLibraries/Kinc/make.bat",
+			"args": [
+				"windows",
+				"--noshaders",
+			],
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Heliotrope: Debug Compile",
+			"type": "shell",
+			"command": "C:/Users/ZPC/Desktop/Programming_Projects/Heliotrope/build_debug.bat",
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Heliotrope: Release Compile",
+			"type": "shell",
+			"command": "C:/Users/ZPC/Desktop/Programming_Projects/Heliotrope/build_release.bat",
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		}
+	]
+}
