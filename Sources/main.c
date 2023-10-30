@@ -23,7 +23,7 @@ int kickstart(int argc, char** argv)
 
 	kinc_display_init();
 
-	char const * config_title = "Varia Project";
+	char const * config_title = "Heliotrope Fields";
 	int config_window_width = 800;
 	int config_window_height = 600;
 	bool config_vsync = true;
@@ -37,7 +37,7 @@ int kickstart(int argc, char** argv)
 		KINC_WINDOW_FEATURE_RESIZEABLE;  
 
 
-	kinc_framebuffer_options fbo = {};
+	kinc_framebuffer_options_t fbo = {0};
 	{
 		fbo.color_bits = 32;
 		fbo.depth_bits = 16;
@@ -47,7 +47,7 @@ int kickstart(int argc, char** argv)
 		fbo.vertical_sync = config_vsync;
 	}
 
-	kinc_window_options_t wo = {};
+	kinc_window_options_t wo = {0};
 	{
 		wo.display_index = kinc_primary_display();
 		wo.width = config_window_width;
@@ -61,7 +61,7 @@ int kickstart(int argc, char** argv)
 	}
 
 
-	kinc_init("Varia", 800, 600, NULL, NULL);
+	kinc_init("Heliotrope Fields", 800, 600, NULL, NULL);
 
 	kinc_start();
 
