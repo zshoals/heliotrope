@@ -60,7 +60,6 @@ int kickstart(int argc, char** argv)
 		wo.mode = KINC_WINDOW_MODE_WINDOW;
 	}
 
-
 	kinc_init("Heliotrope Fields", 800, 600, NULL, NULL);
 
 	kinc_start();
