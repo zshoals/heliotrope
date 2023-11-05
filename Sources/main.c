@@ -6,21 +6,6 @@
 
 int kickstart(int argc, char** argv) 
 {
-	//=======RUN ALL TESTS======
-
-	#ifndef VARIA_DISABLE_TESTS
-		//we can return right here if we really want to
-		//return 0;
-	
-	
-	#endif
-
-	//========TESTS END=========
-
-	//TODO(zshoals): THIS NEEDS TO BE IN THE RIGHT LOCATION, NOT HERE REALLY
-	//Although it's not a big deal to be here either I guess, but I think it should be in our engine layer
-	//Also, it works completely fine, looking good so far.
-
 	kinc_display_init();
 
 	char const * config_title = "Heliotrope Fields";
@@ -31,6 +16,7 @@ int kickstart(int argc, char** argv)
 	//Initialize window and framebuffer options here with struct inits
 	//No crazy construction functions, just do it manually
 	//Eventually load settings from config file somewhere
+	//NOTE: WE HAVE TO LOAD THESE BEFORE DOING CONFIG STUFF ANYWAY, WE NEED KINC INIT OH NOOOO
 	int features = 
 		KINC_WINDOW_FEATURE_MINIMIZABLE | 
 		KINC_WINDOW_FEATURE_MAXIMIZABLE | 
