@@ -163,9 +163,13 @@ bool rl_config_save_to_disk(rl_config_t config)
         {
             kinc_file_writer_write(&writer, &(buffer[0]), written);
             kinc_file_writer_close(&writer);
-        }
 
-        return true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     else
     {
