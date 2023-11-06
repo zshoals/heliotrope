@@ -177,7 +177,7 @@ bool rl_config_save_to_disk(rl_config_t config)
     }
 }
 
-rl_config_t rl_config_load_from_disk_or_apply_defaults(char const * path)
+rl_config_t rl_config_load_from_disk_or_apply_defaults(void)
 {
     //Note(zshoals): Always set defaults, just in case of missing parameters in the config file
     rl_config_t config = {0};
@@ -189,62 +189,66 @@ rl_config_t rl_config_load_from_disk_or_apply_defaults(char const * path)
     }
 
     kinc_file_reader_t reader = {0};
-    kinc_file_reader_open(&reader, RL_CONFIG_PATH, KINC_FILE_TYPE_SAVE);
-
-    size_t file_size = kinc_file_reader_size(&reader);
-    if (file_size > 0 && file_size < RL_CONFIG_BUFFER_CAPACITY)
+    if (kinc_file_reader_open(&reader, RL_CONFIG_PATH, KINC_FILE_TYPE_SAVE))
     {
-        char buffer[RL_CONFIG_BUFFER_CAPACITY] = {0};
-        kinc_file_reader_read(&reader, &(buffer[0]), file_size);
-
-        rl_config_parser_t parser = {0};
+        size_t file_size = kinc_file_reader_size(&reader);
+        if (file_size > 0 && file_size < RL_CONFIG_BUFFER_CAPACITY)
         {
-            parser.file = &(buffer[0]);
-            parser.file_size = file_size;
-            parser.to_process = file_size;
+            char buffer[RL_CONFIG_BUFFER_CAPACITY] = {0};
+            kinc_file_reader_read(&reader, &(buffer[0]), file_size);
+
+            rl_config_parser_t parser = {0};
+            {
+                parser.file = &(buffer[0]);
+                parser.file_size = file_size;
+                parser.to_process = file_size;
+            }
+
+            rl_config_parser_read_tokens(&parser);
+
+            for (int64_t i = 0; i < parser.tokens_length;)
+            {
+                if (rl_config_is_valid_parameter(&parser, i))
+                {
+                    rl_config_token_t numeric = parser.tokens[i + 1];
+
+                    if (rl_config_parameter_matches(numeric, "window_width:"))
+                    {
+                        int window_width = rl_config_token_value_to_integer(numeric);
+                        window_width = rl_math_clamp_i(window_width, RL_CONFIG_MIN_WINDOW_WIDTH, RL_CONFIG_MAX_WINDOW_WIDTH);
+
+                        config.window_width = window_width;
+                    }
+                    else if (rl_config_parameter_matches(numeric, "window_height:"))
+                    {
+                        int window_height = rl_config_token_value_to_integer(numeric);
+                        window_height = rl_math_clamp_i(window_height, RL_CONFIG_MIN_WINDOW_HEIGHT, RL_CONFIG_MAX_WINDOW_HEIGHT);
+
+                        config.window_height = window_height;
+                    }
+                    else if (rl_config_parameter_matches(numeric, "wants_vertical_sync:"))
+                    {
+                        bool vsync_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
+                        config.wants_vertical_sync = vsync_enabled;
+                    }
+                    else if (rl_config_parameter_matches(numeric, "wants_borderless_window:"))
+                    {
+                        bool borderless_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
+                        config.wants_borderless_fullscreen = borderless_enabled;
+                    }
+
+                    i += 2;
+                }
+                else
+                {
+                    i += 1;
+                }
+            }
         }
 
-        rl_config_parser_read_tokens(&parser);
-
-        for (int64_t i = 0; i < parser.tokens_length;)
-        {
-            if (rl_config_is_valid_parameter(&parser, i))
-            {
-                rl_config_token_t numeric = parser.tokens[i + 1];
-
-                if (rl_config_parameter_matches(numeric, "window_width:"))
-                {
-                    int window_width = rl_config_token_value_to_integer(numeric);
-                    window_width = rl_math_clamp_i(window_width, RL_CONFIG_MIN_WINDOW_WIDTH, RL_CONFIG_MAX_WINDOW_WIDTH);
-
-                    config.window_width = window_width;
-                }
-                else if (rl_config_parameter_matches(numeric, "window_height:"))
-                {
-                    int window_height = rl_config_token_value_to_integer(numeric);
-                    window_height = rl_math_clamp_i(window_height, RL_CONFIG_MIN_WINDOW_HEIGHT, RL_CONFIG_MAX_WINDOW_HEIGHT);
-
-                    config.window_height = window_height;
-                }
-                else if (rl_config_parameter_matches(numeric, "wants_vertical_sync:"))
-                {
-                    bool vsync_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
-                    config.wants_vertical_sync = vsync_enabled;
-                }
-                else if (rl_config_parameter_matches(numeric, "wants_borderless_window:"))
-                {
-                    bool borderless_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
-                    config.wants_borderless_fullscreen = borderless_enabled;
-                }
-
-                i += 2;
-            }
-            else
-            {
-                i += 1;
-            }
-        }
+        kinc_file_reader_close(&reader);
     }
+
 
     return config;
 }

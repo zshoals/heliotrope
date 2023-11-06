@@ -5,7 +5,7 @@
 #define RL_CONFIG_BUFFER_CAPACITY 2048
 #define RL_CONFIG_MAX_TOKENS 128
 
-#define RL_CONFIG_PATH "config.txt"
+#define RL_CONFIG_PATH "heliotrope_fields_game.config"
 #define RL_CONFIG_DEFAULT_WINDOW_WIDTH 800
 #define RL_CONFIG_DEFAULT_WINDOW_HEIGHT 600
 #define RL_CONFIG_DEFAULT_VERTICAL_SYNC false
@@ -26,4 +26,4 @@ typedef struct rl_config_t
 } rl_config_t;
 
 bool rl_config_save_to_disk(rl_config_t config);
-rl_config_t rl_config_load_from_disk_or_apply_defaults(char const * path);
+rl_config_t rl_config_load_from_disk_or_apply_defaults(void);
