@@ -3,6 +3,7 @@
 #include "kinc/display.h"
 
 #include "rogue/rl_common.h"
+#include "rogue/io/rl_config.h"
 
 int kickstart(int argc, char** argv) 
 {
@@ -48,7 +49,15 @@ int kickstart(int argc, char** argv)
 
 	kinc_init("Heliotrope Fields", 800, 600, NULL, NULL);
 
-	kinc_start();
+	// kinc_start();
 
+	rl_config_t cfg = rl_config_load_from_disk_or_apply_defaults();
+	int b = 64308;
+	cfg.window_width = 1200;
+	cfg.window_height = 800;
+	cfg.wants_vertical_sync = false;
+	cfg.wants_borderless_fullscreen = true;
+	rl_config_save_to_disk(cfg);
+	int a = 40;
 	return 0;
 }

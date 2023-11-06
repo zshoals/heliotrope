@@ -78,7 +78,7 @@ void rl_config_parser_read_tokens(rl_config_parser_t * parser)
             token.length += 1;
             rl_config_parser_step(parser);
 
-            while (rl_config_parser_has_data(parser) && (isalpha(*parser->file) || *parser->file == ':'))
+            while (rl_config_parser_has_data(parser) && (isalpha(*parser->file) || *parser->file == '_' || *parser->file == ':'))
             {
                 token.length += 1;
                 rl_config_parser_step(parser);
@@ -210,28 +210,29 @@ rl_config_t rl_config_load_from_disk_or_apply_defaults(void)
             {
                 if (rl_config_is_valid_parameter(&parser, i))
                 {
+                    rl_config_token_t param = parser.tokens[i];
                     rl_config_token_t numeric = parser.tokens[i + 1];
 
-                    if (rl_config_parameter_matches(numeric, "window_width:"))
+                    if (rl_config_parameter_matches(param, "window_width:"))
                     {
                         int window_width = rl_config_token_value_to_integer(numeric);
                         window_width = rl_math_clamp_i(window_width, RL_CONFIG_MIN_WINDOW_WIDTH, RL_CONFIG_MAX_WINDOW_WIDTH);
 
                         config.window_width = window_width;
                     }
-                    else if (rl_config_parameter_matches(numeric, "window_height:"))
+                    else if (rl_config_parameter_matches(param, "window_height:"))
                     {
                         int window_height = rl_config_token_value_to_integer(numeric);
                         window_height = rl_math_clamp_i(window_height, RL_CONFIG_MIN_WINDOW_HEIGHT, RL_CONFIG_MAX_WINDOW_HEIGHT);
 
                         config.window_height = window_height;
                     }
-                    else if (rl_config_parameter_matches(numeric, "wants_vertical_sync:"))
+                    else if (rl_config_parameter_matches(param, "wants_vertical_sync:"))
                     {
                         bool vsync_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
                         config.wants_vertical_sync = vsync_enabled;
                     }
-                    else if (rl_config_parameter_matches(numeric, "wants_borderless_window:"))
+                    else if (rl_config_parameter_matches(param, "wants_borderless_fullscreen:"))
                     {
                         bool borderless_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
                         config.wants_borderless_fullscreen = borderless_enabled;
