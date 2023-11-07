@@ -179,7 +179,7 @@ bool rl_config_save_to_disk(rl_config_t config)
 
 rl_config_t rl_config_load_from_disk_or_apply_defaults(void)
 {
-    //Note(zshoals): Always set defaults, just in case of missing parameters in the config file
+    //Note(zshoals):> Always set defaults, just in case of missing parameters in the config file
     rl_config_t config = {0};
     {
         config.window_width = RL_CONFIG_DEFAULT_WINDOW_WIDTH;
