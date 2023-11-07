@@ -44,7 +44,7 @@ static inline void * rl_arena_allocate(rl_arena_t * arena, size_t requested_size
     RL_ASSERT(requested_size > 0);
 
     uintptr_t current_address = arena->head;
-    uintptr_t offset_from_align = RL_ARENA_ALIGN - (current_address % RL_ARENA_ALIGN);
+    uintptr_t offset_from_align = (RL_ARENA_ALIGN - (current_address % RL_ARENA_ALIGN)) % RL_ARENA_ALIGN;
     uintptr_t aligned_address = current_address + offset_from_align;
 
     uintptr_t end_address = arena->end;
