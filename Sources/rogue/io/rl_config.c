@@ -154,7 +154,9 @@ bool rl_config_save_to_disk(rl_config_t config)
     "window_width:%d\n"
     "window_height:%d\n"
     "wants_vertical_sync:%d\n"
-    "wants_borderless_fullscreen:%d\n";
+    "wants_borderless_fullscreen:%d\n"
+    "wants_framerate_limiter:%d\n"
+    "framerate_limit:%d\n";
 
     int written = snprintf(
         &(buffer[0]), 
@@ -163,7 +165,9 @@ bool rl_config_save_to_disk(rl_config_t config)
         config.window_width, 
         config.window_height, 
         RL_CAST(int, config.wants_vertical_sync),
-        RL_CAST(int, config.wants_borderless_fullscreen)
+        RL_CAST(int, config.wants_borderless_fullscreen),
+        RL_CAST(int, config.wants_framerate_limiter),
+        config.framerate_limit
     );
 
     if ( (written < RL_CONFIG_BUFFER_CAPACITY) && (written > 0) )
@@ -197,6 +201,8 @@ rl_config_t rl_config_load_from_disk_or_apply_defaults(void)
         config.window_height = RL_CONFIG_DEFAULT_WINDOW_HEIGHT;
         config.wants_vertical_sync = RL_CONFIG_DEFAULT_VERTICAL_SYNC;
         config.wants_borderless_fullscreen = RL_CONFIG_DEFAULT_BORDERLESS_FULLSCREEN;
+        config.wants_framerate_limiter = RL_CONFIG_DEFAULT_FRAMERATE_LIMITER_ENABLED;
+        config.framerate_limit = RL_CONFIG_DEFAULT_FRAMERATE_LIMIT;
     }
 
     kinc_file_reader_t reader = {0};
@@ -247,6 +253,17 @@ rl_config_t rl_config_load_from_disk_or_apply_defaults(void)
                     {
                         bool borderless_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
                         config.wants_borderless_fullscreen = borderless_enabled;
+                    }
+                    else if (rl_config_parameter_matches(param, "wants_framerate_limiter:"))
+                    {
+                        bool framerate_limiter_enabled = RL_CAST(bool, rl_config_token_value_to_integer(numeric));
+                        config.wants_framerate_limiter = framerate_limiter_enabled;
+                    }
+                    else if (rl_config_parameter_matches(param, "framerate_limit:"))
+                    {
+                        int framerate_limit = rl_config_token_value_to_integer(numeric);
+                        if (framerate_limit < RL_CONFIG_MIN_FRAMERATE_LIMIT) { framerate_limit = RL_CONFIG_MIN_FRAMERATE_LIMIT; }
+                        config.framerate_limit = framerate_limit;
                     }
 
                     i += 2;

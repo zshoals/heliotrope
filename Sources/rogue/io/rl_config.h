@@ -11,10 +11,15 @@
 #define RL_CONFIG_DEFAULT_VERTICAL_SYNC true
 #define RL_CONFIG_DEFAULT_BORDERLESS_FULLSCREEN false
 
+#define RL_CONFIG_DEFAULT_FRAMERATE_LIMITER_ENABLED 0
+#define RL_CONFIG_DEFAULT_FRAMERATE_LIMIT 300
+#define RL_CONFIG_MIN_FRAMERATE_LIMIT 15
+
 #define RL_CONFIG_MAX_WINDOW_WIDTH 7680
 #define RL_CONFIG_MAX_WINDOW_HEIGHT 4320
 #define RL_CONFIG_MIN_WINDOW_WIDTH 800
 #define RL_CONFIG_MIN_WINDOW_HEIGHT 600
+
 
 typedef struct rl_config_t
 {
@@ -22,6 +27,8 @@ typedef struct rl_config_t
     int window_height;
     bool wants_vertical_sync; 
     bool wants_borderless_fullscreen; 
+    bool wants_framerate_limiter;
+    int framerate_limit;
 
 } rl_config_t;
 

@@ -162,11 +162,11 @@ void rl_game_loop_boot(int primary_window)
 
     //Configure Loop
     {
-        context.enable_framerate_limiter = true;
-        context.framerate_limit = 300;
+        context.enable_framerate_limiter = context.config.wants_framerate_limiter;
+        context.framerate_limit = context.config.framerate_limit;
         //NOTE(<zshoals> 11-07-2023):> Don't allow framerate limit to dip under frametime overruns or bad
         //  things will happen
-        if (context.framerate_limit < 10) { context.framerate_limit = 10; }
+        if (context.framerate_limit < 15) { context.framerate_limit = 15; }
 
         context.logic_simulation_rate = (1.0 / 30.0);
         context.maximum_frametime = (1.0 / 10.0);
