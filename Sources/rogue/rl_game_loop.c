@@ -60,6 +60,22 @@ void rl_game_loop_update(void * user_data)
 
 
     //Render
+    if (context->render_accumulator > context->maximum_frametime)
+    {
+        context->render_accumulator = 0.0;
+        context->current_frametime_overruns += 1;
+    }
+    else
+    {
+        context->current_frametime_overruns = 0;
+    }
+
+    if (context->current_frametime_overruns >= context->maximum_frametime_overruns)
+    {
+        RL_ASSERT(0);
+        kinc_stop();
+    }
+
     memcpy(&(context->render_state), &(context->logic_state), sizeof(rl_game_state_t));
 
     double render_dt = (kinc_time() - context->previous_render_time) + context->render_accumulator;
@@ -77,7 +93,7 @@ void rl_game_loop_update(void * user_data)
             RL_NO_OPERATION();
         }
     }
-    else
+    else //NOTE(<zshoals> 11-07-2023):> We're vsynced; render and vsync will stall the loop itself
     {
         rl_game_loop_render(context, render_dt);
         context->render_accumulator = 0.0;
@@ -139,6 +155,9 @@ void rl_game_loop_boot(int primary_window)
     {
         context.enable_framerate_limiter = true;
         context.framerate_limit = 300;
+        //NOTE(<zshoals> 11-07-2023):> Don't allow framerate limit to dip under frametime overruns or bad
+        //  things will happen
+        if (context.framerate_limit < 10) { context.framerate_limit = 10; }
 
         context.logic_simulation_rate = (1.0 / 30.0);
         context.maximum_frametime = (1.0 / 10.0);
