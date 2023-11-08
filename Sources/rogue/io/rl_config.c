@@ -65,18 +65,33 @@ void rl_config_parser_push_token(rl_config_parser_t * parser, rl_config_token_t 
     }
 }
 
+static inline bool rl_config_parser_cursor_is_number(rl_config_parser_t const * parser)
+{
+    return (isdigit(*parser->file));
+}
+
+static inline bool rl_config_parser_cursor_is_param(rl_config_parser_t const * parser)
+{
+    return (isalpha(*parser->file) || *parser->file == '_' || *parser->file == ':');
+}
+
+static inline char const * rl_config_parser_cursor_location(rl_config_parser_t const * parser)
+{
+    return parser->file;
+}
+
 void rl_config_parser_read_tokens(rl_config_parser_t * parser)
 {
     while (rl_config_parser_has_data(parser))
     {
         rl_config_token_t token = {0};
 
-        if (isalpha(*parser->file) || *parser->file == ':')
+        if (rl_config_parser_cursor_is_param(parser))
         {
-            token.token = parser->file;
+            token.token = rl_config_parser_cursor_location(parser);
             token.type = rl_config_token_type_e_parameter;
 
-            while (rl_config_parser_has_data(parser) && (isalpha(*parser->file) || *parser->file == '_' || *parser->file == ':'))
+            while (rl_config_parser_has_data(parser) && rl_config_parser_cursor_is_param(parser))
             {
                 token.length += 1;
                 rl_config_parser_step(parser);
@@ -84,12 +99,12 @@ void rl_config_parser_read_tokens(rl_config_parser_t * parser)
 
             rl_config_parser_push_token(parser, token);
         }
-        else if (isdigit(*parser->file))
+        else if (rl_config_parser_cursor_is_number(parser))
         {
-            token.token = parser->file;
+            token.token = rl_config_parser_cursor_location(parser);
             token.type = rl_config_token_type_e_number;
 
-            while (rl_config_parser_has_data(parser) && isdigit(*parser->file))
+            while (rl_config_parser_has_data(parser) && rl_config_parser_cursor_is_number(parser))
             {
                 token.length += 1;
                 rl_config_parser_step(parser);
