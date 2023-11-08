@@ -75,8 +75,6 @@ void rl_config_parser_read_tokens(rl_config_parser_t * parser)
         {
             token.token = parser->file;
             token.type = rl_config_token_type_e_parameter;
-            token.length += 1;
-            rl_config_parser_step(parser);
 
             while (rl_config_parser_has_data(parser) && (isalpha(*parser->file) || *parser->file == '_' || *parser->file == ':'))
             {
@@ -90,8 +88,6 @@ void rl_config_parser_read_tokens(rl_config_parser_t * parser)
         {
             token.token = parser->file;
             token.type = rl_config_token_type_e_number;
-            token.length += 1;
-            rl_config_parser_step(parser);
 
             while (rl_config_parser_has_data(parser) && isdigit(*parser->file))
             {
