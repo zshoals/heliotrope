@@ -21,9 +21,6 @@ typedef struct rl_game_context_t
     double previous_render_time;
     double render_accumulator;
 
-    bool enable_framerate_limiter;
-    int32_t framerate_limit;
-
     double maximum_frametime;
     int32_t current_frametime_overruns;
     int32_t maximum_frametime_overruns;

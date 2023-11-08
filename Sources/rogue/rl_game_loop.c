@@ -83,11 +83,11 @@ void rl_game_loop_update(void * user_data)
     memcpy(&(context->render_state), &(context->logic_state), sizeof(rl_game_state_t));
 
     double render_dt = (kinc_time() - context->previous_render_time) + context->render_accumulator;
-    if ( !(context->config.wants_vertical_sync) && context->enable_framerate_limiter)
+    if ( !(context->config.wants_vertical_sync) && context->config.wants_framerate_limiter)
     {
         //NOTE(<zshoals> 11-07-2023):> Only actually render here if we're not exceeding the framelimit
         //  this code looks redundant, but is not
-        if (context->render_accumulator >= (1.0 / RL_CAST(double, context->framerate_limit)))
+        if (context->render_accumulator >= (1.0 / RL_CAST(double, context->config.framerate_limit)))
         {
             rl_game_loop_render(context, render_dt);
             context->render_accumulator = 0.0;
@@ -162,11 +162,9 @@ void rl_game_loop_boot(int primary_window)
 
     //Configure Loop
     {
-        context.enable_framerate_limiter = context.config.wants_framerate_limiter;
-        context.framerate_limit = context.config.framerate_limit;
         //NOTE(<zshoals> 11-07-2023):> Don't allow framerate limit to dip under frametime overruns or bad
         //  things will happen
-        if (context.framerate_limit < 15) { context.framerate_limit = 15; }
+        if (context.config.framerate_limit < 15) { context.config.framerate_limit = 15; }
 
         context.logic_simulation_rate = (1.0 / 30.0);
         context.maximum_frametime = (1.0 / 10.0);
