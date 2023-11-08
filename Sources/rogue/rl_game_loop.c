@@ -4,6 +4,7 @@
 #include "rogue/io/rl_config.h"
 
 #include "kinc/system.h"
+#include "kinc/threads/thread.h"
 #include "kinc/window.h"
 #include "kinc/display.h"
 #include "kinc/log.h"
@@ -12,6 +13,7 @@ void rl_game_loop_foreground_handler(void * user_data)
 {
     rl_game_context_t * context = RL_CAST(rl_game_context_t *, user_data);
 
+    kinc_log(KINC_LOG_LEVEL_INFO, "Window gained focus");
     context->enable_sleep_in_loop = false;
 }
 
@@ -19,6 +21,7 @@ void rl_game_loop_background_handler(void * user_data)
 {
     rl_game_context_t * context = RL_CAST(rl_game_context_t * , user_data);
 
+    kinc_log(KINC_LOG_LEVEL_INFO, "Window lost focus");
     context->enable_sleep_in_loop = true;
 }
 
@@ -26,6 +29,7 @@ void rl_game_loop_shutdown_handler(void * user_data)
 {
     rl_game_context_t * context = RL_CAST(rl_game_context_t *, user_data);
     //NOTE(<zshoals> 11-07-2023):> This would be a good place to force a game save (or backup at least)
+    kinc_log(KINC_LOG_LEVEL_INFO, "Shutting down...");
 }
 
 void rl_game_loop_render(rl_game_context_t * context, double dt)
@@ -97,6 +101,11 @@ void rl_game_loop_update(void * user_data)
     {
         rl_game_loop_render(context, render_dt);
         context->render_accumulator = 0.0;
+    }
+
+    if (context->enable_sleep_in_loop)
+    {
+        kinc_thread_sleep(32);
     }
 }
 
