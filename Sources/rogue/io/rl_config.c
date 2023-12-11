@@ -67,12 +67,13 @@ void rl_config_parser_push_token(rl_config_parser_t * parser, rl_config_token_t 
 
 static inline bool rl_config_parser_cursor_is_number(rl_config_parser_t const * parser)
 {
-    return (isdigit(*parser->file));
+    return (isdigit(RL_CAST(unsigned char, *parser->file)));
 }
 
 static inline bool rl_config_parser_cursor_is_param(rl_config_parser_t const * parser)
 {
-    return (isalpha(*parser->file) || *parser->file == '_' || *parser->file == ':');
+    //NOTE(<zshoals> 11-11-2023):> ctype functions require the type to be unsigned char :/
+    return (isalpha(RL_CAST(unsigned char, *parser->file)) || *parser->file == '_' || *parser->file == ':');
 }
 
 static inline char const * rl_config_parser_cursor_location(rl_config_parser_t const * parser)
