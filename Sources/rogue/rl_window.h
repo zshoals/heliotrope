@@ -10,8 +10,6 @@ typedef struct rl_window_state_t
     int y;
     int width;
     int height;
-    int display_index;
-    int window_id;
 
     bool visible;
     bool minimizable;
@@ -22,13 +20,16 @@ typedef struct rl_window_state_t
     bool borderless_fullscreen;
     bool vertical_sync;
 
-    kinc_display_mode_t mode;
+    kinc_display_mode_t _mode;
+    int _display_index;
+    int _window_id;
+
 } rl_window_state_t;
 
 typedef struct rl_window_t
 {
-    bool initialized;
-    bool change_in_progress;
+    bool _initialized;
+    bool _change_in_progress;
 
     rl_window_state_t current;
     rl_window_state_t pending_changes;
