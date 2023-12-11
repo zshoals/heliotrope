@@ -4,12 +4,11 @@
 
 #include "rogue/io/rl_config.h"
 #include "rogue/rl_game_state.h"
-
-#include "kinc/window.h"
+#include "rogue/rl_window.h"
 
 typedef struct rl_game_context_t
 {
-    int primary_window;
+    rl_window_t main_window;
     rl_config_t config;
 
     bool enable_sleep_in_loop;

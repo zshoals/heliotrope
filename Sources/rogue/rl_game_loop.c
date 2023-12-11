@@ -2,12 +2,17 @@
 
 #include "rogue/rl_game_context.h"
 #include "rogue/io/rl_config.h"
+#include "rogue/rl_window.h"
 
 #include "kinc/system.h"
 #include "kinc/threads/thread.h"
 #include "kinc/window.h"
 #include "kinc/display.h"
 #include "kinc/log.h"
+#include "kinc/graphics4/graphics.h"
+
+#include <stdio.h>
+#include <math.h>
 
 void rl_game_loop_foreground_handler(void * user_data)
 {
@@ -19,7 +24,7 @@ void rl_game_loop_foreground_handler(void * user_data)
 
 void rl_game_loop_background_handler(void * user_data)
 {
-    rl_game_context_t * context = RL_CAST(rl_game_context_t * , user_data);
+    rl_game_context_t * context = RL_CAST(rl_game_context_t *, user_data);
 
     kinc_log(KINC_LOG_LEVEL_INFO, "Window lost focus");
     context->enable_sleep_in_loop = true;
@@ -34,13 +39,27 @@ void rl_game_loop_shutdown_handler(void * user_data)
 
 void rl_game_loop_render(rl_game_context_t * context, double dt)
 {
+    //TODO(<zshoals> 12-08-2023):> The window flickers on startup if we haven't rendered once before making
+    //  the window visible, so we need to actually render once before displaying it to avoid flickering
+    kinc_g4_begin(0);
+    kinc_g4_clear(KINC_G4_CLEAR_COLOR, 0, 0.0f, 0);
+    kinc_g4_end(0);
 
+    kinc_g4_swap_buffers();
 }
 
 void rl_game_loop_simulate(rl_game_context_t * context, double dt)
 {
     kinc_log(KINC_LOG_LEVEL_INFO, "Simming... %f", dt);
+    context->main_window.current.x = kinc_window_x(context->main_window.current._window_id);
+    context->main_window.current.y = kinc_window_y(context->main_window.current._window_id);
 
+    rl_window_immediate_add_position(&(context->main_window), (int)(sin(kinc_time()) * 10), (int)(cos(kinc_time()) * 10));
+
+
+    char title_buffer[256] = {0};
+    snprintf(&(title_buffer[0]), 255, "%.20f NERDS", dt);
+    rl_window_immediate_set_title(&(context->main_window), &(title_buffer[0]));
 }
 
 void rl_game_loop_update(void * user_data)
@@ -116,61 +135,41 @@ void rl_game_loop_boot(int primary_window)
     static rl_game_context_t context = {0};
     //======================================================================
 
+    context.config = rl_config_load_from_disk_or_apply_defaults();
+    rl_config_save_to_disk(context.config);
+
     //Apply various window settings now once Kinc has been initialized
-    context.primary_window = primary_window;
     {
-        context.config = rl_config_load_from_disk_or_apply_defaults();
-        rl_config_save_to_disk(context.config);
-
         int primary_display_index = kinc_primary_display();
-        kinc_display_mode_t mode = kinc_display_current_mode(primary_display_index);
+        rl_window_initialize(&(context.main_window), primary_window, primary_display_index);
 
-        kinc_window_options_t wo = {0};
+        rl_window_pending_begin_changes(&(context.main_window));
         {
-            wo.x = -1;
-            wo.y = -1;
-            wo.width = context.config.window_width;
-            wo.height = context.config.window_height;
-            wo.display_index = primary_display_index;
-            wo.visible = true;
-            wo.window_features = 
-                KINC_WINDOW_FEATURE_MINIMIZABLE | 
-                KINC_WINDOW_FEATURE_MAXIMIZABLE | 
-                KINC_WINDOW_FEATURE_RESIZEABLE;
-
-            wo.mode = (context.config.wants_borderless_fullscreen) ? KINC_WINDOW_MODE_FULLSCREEN : KINC_WINDOW_MODE_WINDOW;
+            context.main_window.pending_changes.width = context.config.window_width;
+            context.main_window.pending_changes.height = context.config.window_height;
+            context.main_window.pending_changes.visible = true;
+            context.main_window.pending_changes.minimizable = true;
+            context.main_window.pending_changes.maximizable = true;
+            context.main_window.pending_changes.resizable = true;
+            context.main_window.pending_changes.on_top = false;
+            context.main_window.pending_changes.borderless_fullscreen = context.config.wants_borderless_fullscreen;
+            context.main_window.pending_changes.vertical_sync = context.config.wants_vertical_sync;
         }
-
-        kinc_framebuffer_options_t fbo = {0};
-        {
-            fbo.frequency = mode.frequency;
-            fbo.color_bits = 32;
-            fbo.depth_bits = 16;
-            fbo.stencil_bits = 8;
-            fbo.samples_per_pixel = 1;
-
-            fbo.vertical_sync = context.config.wants_vertical_sync;
-        }
-
-        kinc_window_change_framebuffer(context.primary_window, &fbo);
-        kinc_window_resize(context.primary_window, wo.width, wo.height);
-        int window_half_width = (mode.width / 2) - (context.config.window_width / 2);
-        int window_half_height = (mode.height / 2) - (context.config.window_height / 2);
-        kinc_window_move(context.primary_window, window_half_width, window_half_height);
-        kinc_window_change_mode(context.primary_window, wo.mode);
+        rl_window_pending_apply_changes(&(context.main_window));
+        rl_window_immediate_center_window(&(context.main_window));
     }
 
     //Configure Loop
     {
         //NOTE(<zshoals> 11-07-2023):> Don't allow framerate limit to dip under frametime overruns or bad
         //  things will happen
+        //  this should probably be somewhere else, like maybe forced every frame
         if (context.config.framerate_limit < 15) { context.config.framerate_limit = 15; }
 
         context.logic_simulation_rate = (1.0 / 30.0);
         context.maximum_frametime = (1.0 / 10.0);
         context.maximum_frametime_overruns = 10;
     }
-
 
     //NOTE(<zshoals> 11-06-2023):> Begin the main game loop!
     kinc_set_update_callback(&rl_game_loop_update, &context);
