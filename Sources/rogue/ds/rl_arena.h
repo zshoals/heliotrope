@@ -67,6 +67,6 @@ RL_INLINE void rl_arena_clear(rl_arena_t * arena)
 {
     arena->head = arena->base;
 
-    //NOTE(zshoals):> This is a safety measure, we can elide the memset if we just want max performance
+    //PERFORMANCE_WARNING(zshoals):> This is a safety measure, we can elide the memset if we just want max performance
     memset(arena->base, 0, rl_arena_total_capacity(arena));
 }
