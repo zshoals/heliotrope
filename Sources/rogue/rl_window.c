@@ -253,6 +253,7 @@ void rl_window_initialize(rl_window_t * win, int window_id, int display_index)
 
     win->current = win->pending_changes;
     win->_initialized = true;
+    win->_change_in_progress = true;
 
     rl_window_pending_apply_changes(win);
 }
