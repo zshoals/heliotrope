@@ -25,10 +25,26 @@ void rl_window_immediate_add_position(rl_window_t * win, int x, int y)
     kinc_window_move(win->current._window_id, win->current.x, win->current.y);
 }
 
+void rl_window_immediate_center_window(rl_window_t * win)
+{
+    win->current.x = (win->current._mode.width / 2) - (win->current.width / 2);
+    win->current.y = (win->current._mode.height / 2) - (win->current.height / 2);
+
+    kinc_window_move(win->current._window_id, win->current.x, win->current.y);
+}
+
 void rl_window_immediate_set_window_size(rl_window_t * win, int width, int height)
 {
     win->current.width = width;
     win->current.height = height;
+
+    kinc_window_resize(win->current._window_id, width, height);
+}
+
+void rl_window_immediate_add_window_size(rl_window_t * win, int width, int height)
+{
+    win->current.width += width;
+    win->current.height += height;
 
     kinc_window_resize(win->current._window_id, width, height);
 }
